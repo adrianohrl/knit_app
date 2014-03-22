@@ -29,6 +29,25 @@ public class Fabric extends SimpleObject implements Observable, Collectionable, 
     private FabricMachines machs;
     private MeasurementResults results;
     
+    /**
+     * 
+     * @param name
+     * @param obs
+     * @param coll
+     * @param resp
+     * @param mach
+     * @param date
+     * @param thrds
+     * @param vars
+     * @param colors
+     * @param machs
+     * @param coneWeights
+     * @param elapsedTimes
+     * @param fabricWeights
+     * @param fabricHeights
+     * @param fabricWidths
+     * @throws FabricInException 
+     */
     public Fabric(String name, String obs, Collection coll, Responsible resp, Machine mach, Date date, 
             ThreadTypes thrds, Variants vars, Colors[] colors, Machines machs, Double[][] coneWeights, 
             Double[] elapsedTimes, Double[] fabricWeights, Double[] fabricHeights, Double[] fabricWidths) throws FabricInException

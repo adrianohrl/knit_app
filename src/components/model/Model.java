@@ -7,6 +7,7 @@ import components.size.*;
 import utilities.Utilities;
 import utilities.Database;
 import java.util.Date;
+import components.fabric.Fabrics;
 
 /**
  * 
@@ -21,6 +22,7 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
     private Responsible resp;
     private Date date;
     private Percentages percs;
+    private Fabrics fabrs;
     
     /**
      * 
