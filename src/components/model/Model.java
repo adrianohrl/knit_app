@@ -8,6 +8,7 @@ import utilities.Utilities;
 import utilities.Database;
 import java.util.Date;
 import components.fabric.Fabrics;
+import components.variant.Variants;
 
 /**
  * 
@@ -22,7 +23,7 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
     private Responsible resp;
     private Date date;
     private Percentages percs;
-    private Fabrics fabrs;
+    private ModelTable table;
     
     /**
      * 
@@ -32,9 +33,10 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
      * @param resp
      * @param date
      * @param percs
+     * @param table
      * @throws ModelInException 
      */
-    public Model(String name, long ref, Collection coll, Responsible resp, Date date, Percentages percs) throws ModelInException
+    public Model(String name, long ref, Collection coll, Responsible resp, Date date, Percentages percs, Fabrics fabrs, Variants vars, Variants[] newVars) throws ModelInException
     {
         super(name);
         if (ref <= 0)
@@ -52,6 +54,9 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
         if (percs == null && !Utilities.areValidPercentages(percs))
             throw new ModelInException("Invalid Percentages!!!");
         this.percs = percs;
+        if (table == null)
+            throw new ModelInException(""); 
+        this.table = new ModelTable(this, fabrs, vars, newVars);
     }
     
     /**
@@ -67,6 +72,7 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
         this.resp = this.getResponsible(id);
         this.date = this.getDate(id);
         this.percs = this.getPercentages(id);
+        this.table = this.getTable(this);
     }
     
     /**
@@ -77,13 +83,15 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
     public Model(String name) throws ModelInException
     {
         super(name);
-        if (super.getID() == 0)
+        long id = super.getID();
+        if (id <= 0)
             throw new ModelInException("");
-        this.ref = this.getRef(super.getID());
-        this.coll = this.getCollection(super.getID());
-        this.resp = this.getResponsible(super.getID());
-        this.date = this.getDate(super.getID());
-        this.percs = this.getPercentages(super.getID());
+        this.ref = this.getRef(id);
+        this.coll = this.getCollection(id);
+        this.resp = this.getResponsible(id);
+        this.date = this.getDate(id);
+        this.percs = this.getPercentages(id);
+        this.table = this.getTable(this);
     }
     
     /**
@@ -398,6 +406,25 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
             Database.update(sql);
         }
         this.percs = newValues;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public ModelTable getTable()
+    {
+        return this.table;
+    }
+    
+    /**
+     * 
+     * @param id
+     * @return 
+     */
+    private ModelTable getTable(Model model)
+    {
+        return new ModelTable(model);
     }
 }
  
