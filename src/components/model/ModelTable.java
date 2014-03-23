@@ -24,13 +24,13 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
      * @param model
      * @param fabrs
      * @param vars
-     * @param newVars
+     * @param oldVars
      * @throws TableException 
      */
-    public ModelTable(Model model, Fabrics fabrs, Variants vars, Variants[] newVars) throws TableException
+    public ModelTable(Model model, Fabrics fabrs, Variants vars, Variants[] oldVars) throws TableException
     {
         super(model);
-        this.table = this.createTable(fabrs, vars, newVars);
+        this.table = this.createTable(fabrs, vars, oldVars);
     }
     
     /**
@@ -72,11 +72,11 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
      */
     private void buildTable(Model model)
     {
-        if (model == null)
+        /*if (model == null)
             throw new ModelInException("Model must not be null!!!");
         if (!model.isRegistered())
             throw new ModelInException("This model is not registered yet!!!");
-        /*String sql = "SELECT thrdId, varId, colorId FROM " + this.getClassName() + "s WHERE fabrId = " + model.getID();
+        String sql = "SELECT fabrId, varId, oldVarId FROM " + this.getClassName() + "s WHERE modId = " + model.getID();
         long[][] datas = Database.getLongTable(sql);
         this.table = new Table<Fabric, Variant, Variant>();
         for (int i = 0, j = 1; i < datas.length; i++)
@@ -112,7 +112,7 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
      * @return
      * @throws TableException 
      */
-    private TableInterface<Fabric, Variant, Variant> createTable(Fabrics fabrs, Variants vars, Variants[] newVars) throws TableException
+    private TableInterface<Fabric, Variant, Variant> createTable(Fabrics fabrs, Variants vars, Variants[] oldVars) throws TableException
     {
         if (fabrs == null)
             throw new ModelInException("Thread Types must not be null!!!");
@@ -120,17 +120,17 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
         if (vars == null)
             throw new ModelInException("Variants must not be null!!!");
         ArrayList<Variant> columns = vars.getObjs();
-        if (newVars == null)
-            throw new ModelInException("Variants must not be null!!!");
-        if (newVars.length != fabrs.size())
+        if (oldVars == null)
+            throw new ModelInException("Old Variants must not be null!!!");
+        if (oldVars.length != fabrs.size())
             throw new ModelInException("Variants vector size must be equals to the number of elements in Thread Types!!!");
         int length = vars.size();
-        for (Variants color : newVars)
-            if (color.size() != length)
+        for (Variants var : oldVars)
+            if (var.size() != length)
                 throw new ModelInException("The number of elements in Variants vector must be equals to the number of elements in Variants!!!");
         ArrayList<ArrayList<Variant>> cells = new ArrayList<ArrayList<Variant>>();
-        for (int i = 0; i < newVars.length; i++)
-            cells.add(newVars[i].getObjs());
+        for (int i = 0; i < oldVars.length; i++)
+            cells.add(oldVars[i].getObjs());
         return new Table<Fabric, Variant, Variant>(rows, columns, cells);
     }
     
@@ -224,7 +224,7 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
      * @param var
      * @return 
      */
-    public Variants getVariantNewVariants(Variant var) throws ModelInException
+    public Variants getVariantOldVariants(Variant var) throws ModelInException
     {
         if (var == null)
             throw new ModelInException("Variant must not be null!!!");
@@ -278,14 +278,14 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
      * @return
      * @throws ModelInException 
      */
-    private boolean hasFabric(Fabric thrd) throws ModelInException
+    private boolean hasFabric(Fabric fabr) throws ModelInException
     {
-        if (thrd == null)
+        if (fabr == null)
             throw new ModelInException("Thread Type must not be null!!!");
-        if (!thrd.isRegistered())
+        if (!fabr.isRegistered())
             throw new ModelInException("This thread type has not been registered yet!!!");
         Fabrics fabrs = this.getFabrics();
-        return fabrs.contains(thrd);
+        return fabrs.contains(fabr);
     }
     
     /**
