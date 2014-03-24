@@ -166,11 +166,34 @@ public class FabricTable extends FabricComponent implements TableInterface<Threa
      * @return 
      */
     @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof FabricTable && this.equals((FabricTable) obj);
+    }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean equals(TableInterface obj)
+    {
+        return obj instanceof FabricTable && this.equals((FabricTable) obj);
+    }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
     public boolean equals(FabricComponent obj)
     {
-        Fabric fabric = obj.getFabric();
-        return fabric.equals(super.getFabric()) && obj instanceof FabricTable && this.equals((FabricTable) obj);
+        return obj instanceof FabricTable && this.equals((FabricTable) obj);
     }
+    
+    
     
     /**
      * 
@@ -180,7 +203,8 @@ public class FabricTable extends FabricComponent implements TableInterface<Threa
     public boolean equals(FabricTable obj)
     {
         TableInterface<ThreadType, Variant, Color> table = obj.getTable();
-        return table.equals(this.table);
+        String fabricName = super.getFabric().getName();
+        return fabricName.equals(obj.getFabric().getName()) && table.equals(this.table);
     }
     
     /**

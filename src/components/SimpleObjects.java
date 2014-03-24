@@ -169,4 +169,25 @@ public abstract class SimpleObjects<T extends SimpleObject> implements List<T>
     {
         return new SimpleObjectsIterator(this);
     }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof SimpleObjects && this.equals((SimpleObjects) obj);
+    }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    public boolean equals(SimpleObjects obj)
+    {
+        return this.objs.equals(obj.getObjs());
+    }
 }

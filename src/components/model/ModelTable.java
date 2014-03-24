@@ -23,14 +23,14 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
      * 
      * @param model
      * @param fabrs
-     * @param vars
+     * @param newVars
      * @param oldVars
      * @throws TableException 
      */
-    public ModelTable(Model model, Fabrics fabrs, Variants vars, Variants[] oldVars) throws TableException
+    public ModelTable(Model model, Fabrics fabrs, Variants newVars, Variants[] oldVars) throws TableException
     {
         super(model);
-        this.table = this.createTable(fabrs, vars, oldVars);
+        this.table = this.createTable(fabrs, newVars, oldVars);
     }
     
     /**
@@ -72,18 +72,18 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
      */
     private void buildTable(Model model)
     {
-        /*if (model == null)
+        if (model == null)
             throw new ModelInException("Model must not be null!!!");
         if (!model.isRegistered())
             throw new ModelInException("This model is not registered yet!!!");
-        String sql = "SELECT fabrId, varId, oldVarId FROM " + this.getClassName() + "s WHERE modId = " + model.getID();
+        String sql = "SELECT fabrId, newVarId, oldVarId FROM " + this.getClassName() + "s WHERE modId = " + model.getID();
         long[][] datas = Database.getLongTable(sql);
         this.table = new Table<Fabric, Variant, Variant>();
         for (int i = 0, j = 1; i < datas.length; i++)
             try
             { 
-                Variant var = new Variant(datas[i][j]);
-                this.addColumn(var);
+                Variant newVar = new Variant(datas[i][j]);
+                this.addColumn(newVar);
             }
             catch (ModelInException e)
             {
@@ -92,42 +92,42 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
         int columnLength = this.getColumnCount();
         for (int i = 0, j = 0; i < datas.length; i += columnLength)
         {
-            Fabric thrd = new Fabric(datas[i][j]);
-            this.addRow(thrd);
+            Fabric fabr = new Fabric(datas[i][j]);
+            this.addRow(fabr);
         }
         int rowLength = this.getRowCount();
         for (int i = 0; i < rowLength; i++)
             for (int j = 0; j < columnLength; j++)
             {
-                Variant color = new Variant(datas[i * columnLength + j][2]);
-                this.setCell(i, j, color);
-            }*/
+                Variant oldVar = new Variant(datas[i * columnLength + j][2]);
+                this.setCell(i, j, oldVar);
+            }
     }
     
     /**
      * 
      * @param fabrs
-     * @param vars
+     * @param oldVars
      * @param newVars
      * @return
      * @throws TableException 
      */
-    private TableInterface<Fabric, Variant, Variant> createTable(Fabrics fabrs, Variants vars, Variants[] oldVars) throws TableException
+    private TableInterface<Fabric, Variant, Variant> createTable(Fabrics fabrs, Variants newVars, Variants[] oldVars) throws TableException
     {
         if (fabrs == null)
-            throw new ModelInException("Thread Types must not be null!!!");
+            throw new ModelInException("Fabrics must not be null!!!");
         ArrayList<Fabric> rows = fabrs.getObjs();
-        if (vars == null)
-            throw new ModelInException("Variants must not be null!!!");
-        ArrayList<Variant> columns = vars.getObjs();
+        if (newVars == null)
+            throw new ModelInException("New variants must not be null!!!");
+        ArrayList<Variant> columns = newVars.getObjs();
         if (oldVars == null)
             throw new ModelInException("Old Variants must not be null!!!");
         if (oldVars.length != fabrs.size())
-            throw new ModelInException("Variants vector size must be equals to the number of elements in Thread Types!!!");
-        int length = vars.size();
-        for (Variants var : oldVars)
-            if (var.size() != length)
-                throw new ModelInException("The number of elements in Variants vector must be equals to the number of elements in Variants!!!");
+            throw new ModelInException("New Variants vector size must be equals to the number of elements in Fabrics!!!");
+        int length = newVars.size();
+        for (Variants oldVar : oldVars)
+            if (oldVar.size() != length)
+                throw new ModelInException("The number of elements in Old Variants vector must be equals to the number of elements in New Variants!!!");
         ArrayList<ArrayList<Variant>> cells = new ArrayList<ArrayList<Variant>>();
         for (int i = 0; i < oldVars.length; i++)
             cells.add(oldVars[i].getObjs());
@@ -146,13 +146,13 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
         Model model = super.getModel();
         for (int i = 0; i < this.table.getRowCount(); i++)
         {
-            Fabric thrd = this.table.getRowHeader(i);
+            Fabric fabr = this.table.getRowHeader(i);
             for (int j = 0; j < this.table.getColumnCount(); j++)
             {
-                Variant var = this.table.getColumnHeader(j);
-                Variant color = this.table.getCellElement(i, j);
-                String sql = "INSERT INTO " + this.getClassName() + "s(fabrId, thrdId, varId, colorId) VALUES (" + 
-                        model.getID() + ", " + thrd.getID() + ", " + var.getID() + ", " + color.getID() + ")";
+                Variant newVar = this.table.getColumnHeader(j);
+                Variant oldVar = this.table.getCellElement(i, j);
+                String sql = "INSERT INTO " + this.getClassName() + "s(modId, fabrId, newVarId, oldVarId) VALUES (" + 
+                        model.getID() + ", " + fabr.getID() + ", " + newVar.getID() + ", " + oldVar.getID() + ")";
                 Database.update(sql);
             }
         }
@@ -164,10 +164,31 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
      * @return 
      */
     @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof ModelTable && this.equals((ModelTable) obj);
+    }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean equals(TableInterface obj)
+    {
+        return obj instanceof ModelTable && this.equals((ModelTable) obj);
+    }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
     public boolean equals(ModelComponent obj)
     {
-        Model model = obj.getModel();
-        return model.equals(super.getModel()) && obj instanceof ModelTable && this.equals((ModelTable) obj);
+        return obj instanceof ModelTable && this.equals((ModelTable) obj);
     }
     
     /**
@@ -178,7 +199,8 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public boolean equals(ModelTable obj)
     {
         TableInterface<Fabric, Variant, Variant> table = obj.getTable();
-        return table.equals(this.table);
+        String modelName = super.getModel().getName();
+        return modelName.equals(obj.getModel().getName()) && table.equals(this.table);
     }
     
     /**
@@ -196,80 +218,80 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
      * 
      * @return 
      */
-    public Variants getVariants()
+    public Variants getNewVariants()
     {
         ArrayList<Variant> objs = this.getColumnHeaders();
-        Variants vars = new Variants(objs);
-        return vars;
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    public Variants[] getNewVariants()
-    {
-        ArrayList<ArrayList<Variant>> cells = this.getCellElements();
-        Variants[] newVars = new Variants[cells.size()];
-        for (int i = 0; i < newVars.length; i++)
-        {
-            ArrayList<Variant> objs = cells.get(i);
-            newVars[i] = new Variants(objs);
-        }
-        return newVars;
-    }
-    
-    /**
-     * 
-     * @param var
-     * @return 
-     */
-    public Variants getVariantOldVariants(Variant var) throws ModelInException
-    {
-        if (var == null)
-            throw new ModelInException("Variant must not be null!!!");
-        if (!var.isRegistered())
-            throw new ModelInException("This variant has not been registered yet!!!");
-        if (!this.hasVariant(var))
-            throw new ModelInException("Invalid variant!!!");
-        int columnIndex = this.getVariantIndex(var);
-        ArrayList<Variant> objs = this.getColumnCellElements(columnIndex);
         Variants newVars = new Variants(objs);
         return newVars;
     }
     
     /**
      * 
-     * @param var
      * @return 
      */
-    private int getVariantIndex(Variant var) throws ModelInException
+    public Variants[] getOldVariants()
     {
-        if (var == null)
-            throw new ModelInException("Variant must not be null!!!");
-        if (!var.isRegistered())
-            throw new ModelInException("This variant has not been registered yet!!!");
-        if (!this.hasVariant(var))
-            throw new ModelInException("Invalid variant!!!");
-        ArrayList<Variant> vars = this.getColumnHeaders();
-        int columnIndex = vars.indexOf(var);
+        ArrayList<ArrayList<Variant>> cells = this.getCellElements();
+        Variants[] oldVars = new Variants[cells.size()];
+        for (int i = 0; i < oldVars.length; i++)
+        {
+            ArrayList<Variant> objs = cells.get(i);
+            oldVars[i] = new Variants(objs);
+        }
+        return oldVars;
+    }
+    
+    /**
+     * 
+     * @param newVar
+     * @return 
+     */
+    public Variants getNewVariantOldVariants(Variant newVar) throws ModelInException
+    {
+        if (newVar == null)
+            throw new ModelInException("New variant must not be null!!!");
+        if (!newVar.isRegistered())
+            throw new ModelInException("This new variant has not been registered yet!!!");
+        if (!this.hasNewVariant(newVar))
+            throw new ModelInException("Invalid new variant!!!");
+        int columnIndex = this.getNewVariantIndex(newVar);
+        ArrayList<Variant> objs = this.getColumnCellElements(columnIndex);
+        Variants oldVars = new Variants(objs);
+        return oldVars;
+    }
+    
+    /**
+     * 
+     * @param newVar
+     * @return 
+     */
+    private int getNewVariantIndex(Variant newVar) throws ModelInException
+    {
+        if (newVar == null)
+            throw new ModelInException("New variant must not be null!!!");
+        if (!newVar.isRegistered())
+            throw new ModelInException("This new variant has not been registered yet!!!");
+        if (!this.hasNewVariant(newVar))
+            throw new ModelInException("Invalid new variant!!!");
+        ArrayList<Variant> newVars = this.getColumnHeaders();
+        int columnIndex = newVars.indexOf(newVar);
         return columnIndex;
     }
     
     /**
      * 
-     * @param var
+     * @param newVar
      * @return
      * @throws ModelInException 
      */
-    private boolean hasVariant(Variant var) throws ModelInException
+    private boolean hasNewVariant(Variant newVar) throws ModelInException
     {
-        if (var == null)
-            throw new ModelInException("Variant must not be null!!!");
-        if (!var.isRegistered())
-            throw new ModelInException("This variant has not been registered yet!!!");
-        Variants vars = this.getVariants();
-        return vars.contains(var);
+        if (newVar == null)
+            throw new ModelInException("New variant must not be null!!!");
+        if (!newVar.isRegistered())
+            throw new ModelInException("This new variant has not been registered yet!!!");
+        Variants newVars = this.getNewVariants();
+        return newVars.contains(newVar);
     }
     
     /**
@@ -281,9 +303,9 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     private boolean hasFabric(Fabric fabr) throws ModelInException
     {
         if (fabr == null)
-            throw new ModelInException("Thread Type must not be null!!!");
+            throw new ModelInException("Fabric must not be null!!!");
         if (!fabr.isRegistered())
-            throw new ModelInException("This thread type has not been registered yet!!!");
+            throw new ModelInException("This fabric has not been registered yet!!!");
         Fabrics fabrs = this.getFabrics();
         return fabrs.contains(fabr);
     }
@@ -297,9 +319,9 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public void addRow(Fabric row) throws TableException, ModelInException
     {
         if (row == null)
-            throw new ModelInException("Thread Type must not be null!!!");
+            throw new ModelInException("Fabric must not be null!!!");
         if (!row.isRegistered())
-            throw new ModelInException("This thread type has not been registered yet!!!");
+            throw new ModelInException("This fabric has not been registered yet!!!");
         this.table.addRow(row);
     }
     
@@ -313,11 +335,11 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public void addRow(Fabric row, ArrayList<Variant> cells) throws TableException, ModelInException
     {
         if (row == null)
-            throw new ModelInException("Thread Type must not be null!!!");
+            throw new ModelInException("Fabric must not be null!!!");
         if (!row.isRegistered())
-            throw new ModelInException("This thread type has not been registered yet!!!");
+            throw new ModelInException("This fabric has not been registered yet!!!");
         if (cells == null)
-            throw new ModelInException("Variants must not be null!!!");
+            throw new ModelInException("Old Variants must not be null!!!");
         this.table.addRow(row, cells);
     }
     
@@ -331,11 +353,11 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public void addRow(Fabric row, Variant[] cells) throws TableException, ModelInException
     {
         if (row == null)
-            throw new ModelInException("Thread Type must not be null!!!");
+            throw new ModelInException("Fabric must not be null!!!");
         if (!row.isRegistered())
-            throw new ModelInException("This thread type has not been registered yet!!!");
+            throw new ModelInException("This fabric has not been registered yet!!!");
         if (cells == null)
-            throw new ModelInException("Variants must not be null!!!");
+            throw new ModelInException("Old Variants must not be null!!!");
         this.table.addRow(row, cells);
     }
     
@@ -348,11 +370,11 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public void addRow(Fabric row, Variants cells) throws TableException, ModelInException
     {
         if (row == null)
-            throw new ModelInException("Thread Type must not be null!!!");
+            throw new ModelInException("Fabric must not be null!!!");
         if (!row.isRegistered())
-            throw new ModelInException("This thread type has not been registered yet!!!");
+            throw new ModelInException("This fabric has not been registered yet!!!");
         if (cells == null)
-            throw new ModelInException("Variants must not be null!!!");
+            throw new ModelInException("Old variants must not be null!!!");
         ArrayList<Variant> objs = cells.getObjs();
         this.addRow(row, objs);
     }
@@ -399,9 +421,9 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public void setRowHeader(int rowIndex, Fabric row) throws TableException, ModelInException
     {
         if (row == null)
-            throw new ModelInException("Thread Type must not be null!!!");
+            throw new ModelInException("Fabric must not be null!!!");
         if (!row.isRegistered())
-            throw new ModelInException("This thread type has not been registered yet!!!");
+            throw new ModelInException("This fabric has not been registered yet!!!");
         this.table.setRowHeader(rowIndex, row);
     }
     
@@ -414,11 +436,11 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public void addColumn(Variant column) throws TableException, ModelInException
     {
         if (column == null)
-            throw new ModelInException("Variant must not be null!!!");
+            throw new ModelInException("New variant must not be null!!!");
         if (!column.isRegistered())
-            throw new ModelInException("This variant has not been registered yet!!!");
-        if (this.hasVariant(column))
-            throw new ModelInException("This Variant has been already inputted!!!");
+            throw new ModelInException("This new variant has not been registered yet!!!");
+        if (this.hasNewVariant(column))
+            throw new ModelInException("This new variant has been already inputted!!!");
         this.table.addColumn(column);
     }
     
@@ -432,13 +454,13 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public void addColumn(Variant column, ArrayList<Variant> cells) throws TableException, ModelInException
     {
         if (column == null)
-            throw new ModelInException("Variant must not be null!!!");
+            throw new ModelInException("New variant must not be null!!!");
         if (!column.isRegistered())
-            throw new ModelInException("This variant has not been registered yet!!!");
-        if (this.hasVariant(column))
-            throw new ModelInException("This Variant has been already inputted!!!");
+            throw new ModelInException("This new variant has not been registered yet!!!");
+        if (this.hasNewVariant(column))
+            throw new ModelInException("This new variant has been already inputted!!!");
         if (cells == null)
-            throw new ModelInException("Variants must not be null!!!");
+            throw new ModelInException("Old variants must not be null!!!");
         this.table.addColumn(column, cells);
     }
     
@@ -452,13 +474,13 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public void addColumn(Variant column, Variant[] cells) throws TableException, ModelInException
     {
         if (column == null)
-            throw new ModelInException("Variant must not be null!!!");
+            throw new ModelInException("New variant must not be null!!!");
         if (!column.isRegistered())
-            throw new ModelInException("This variant has not been registered yet!!!");
-        if (this.hasVariant(column))
-            throw new ModelInException("This Variant has been already inputted!!!");
+            throw new ModelInException("This new variant has not been registered yet!!!");
+        if (this.hasNewVariant(column))
+            throw new ModelInException("This new variant has been already inputted!!!");
         if (cells == null)
-            throw new ModelInException("Variants must not be null!!!");
+            throw new ModelInException("Old variants must not be null!!!");
         this.table.addColumn(column, cells);
     }
     
@@ -471,13 +493,13 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public void addColumn(Variant column, Variants cells) throws TableException, ModelInException
     {
         if (column == null)
-            throw new ModelInException("Variant must not be null!!!");
+            throw new ModelInException("New variant must not be null!!!");
         if (!column.isRegistered())
-            throw new ModelInException("This variant has not been registered yet!!!");
-        if (this.hasVariant(column))
-            throw new ModelInException("This Variant has been already inputted!!!");
+            throw new ModelInException("This new variant has not been registered yet!!!");
+        if (this.hasNewVariant(column))
+            throw new ModelInException("This new variant has been already inputted!!!");
         if (cells == null)
-            throw new ModelInException("Variants must not be null!!!");
+            throw new ModelInException("Old variants must not be null!!!");
         ArrayList<Variant> objs = cells.getObjs();
         this.addColumn(column, objs);
     }
@@ -524,9 +546,9 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public void setColumnHeader(int columnIndex, Variant column) throws TableException, ModelInException
     {
         if (column == null)
-            throw new ModelInException("Variant must not be null!!!");
-        if (this.hasVariant(column))
-            throw new ModelInException("This Variant has been already inputted!!!");
+            throw new ModelInException("New variant must not be null!!!");
+        if (this.hasNewVariant(column))
+            throw new ModelInException("This new variant has been already inputted!!!");
         this.table.setColumnHeader(columnIndex, column);
     }
     
@@ -585,7 +607,7 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
     public void setCell(int rowIndex, int columnIndex, Variant cell)
     {
         if (cell == null)
-            throw new ModelInException("Variant must not be null!!!");
+            throw new ModelInException("Old variant must not be null!!!");
         this.table.setCell(rowIndex, columnIndex, cell);
     }
     

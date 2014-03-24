@@ -448,4 +448,38 @@ public class Table<ROW, COL, CELL> implements TableInterface<ROW, COL, CELL>
             str += " ";
         return str;
     }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof TableInterface && this.equals((TableInterface) obj);
+    }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean equals(TableInterface obj)
+    {
+        return obj instanceof Table && this.equals((Table) obj);
+    }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    public boolean equals(Table obj)
+    {
+        return this.rows.equals(obj.getRowHeaders()) && 
+                this.columns.equals(obj.getColumnHeaders()) &&
+                this.cells.equals(obj.getCellElements());
+    }
 }

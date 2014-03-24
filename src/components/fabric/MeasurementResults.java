@@ -123,8 +123,7 @@ public class MeasurementResults extends FabricComponent
     @Override
     public boolean equals(FabricComponent obj)
     {
-        Fabric fabric = obj.getFabric();
-        return fabric.equals(super.getFabric()) && obj instanceof MeasurementResults && this.equals((MeasurementResults) obj);
+        return obj instanceof MeasurementResults && this.equals((MeasurementResults) obj);
     }
     
     /**
@@ -136,6 +135,7 @@ public class MeasurementResults extends FabricComponent
     {
         ConeResults cRes = obj.getConeResults();
         FabricResults fRes = obj.getFabricResults();
-        return cRes.equals(this.cRes) && fRes.equals(this.fRes);
+        String fabricName = super.getFabric().getName();
+        return fabricName.equals(obj.getFabric().getName()) && cRes.equals(this.cRes) && fRes.equals(this.fRes);
     }
 }

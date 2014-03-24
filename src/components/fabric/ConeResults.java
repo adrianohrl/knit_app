@@ -62,6 +62,13 @@ public class ConeResults extends FabricComponent
         return this.table;
     }
     
+    /**
+     * 
+     * @param thrds
+     * @param weights
+     * @return
+     * @throws FabricInException 
+     */
     private Table<ThreadType, MeasureLabels, Double> createTable(ThreadTypes thrds, Double[][] weights) throws FabricInException
     {
         if (thrds == null)
@@ -125,8 +132,7 @@ public class ConeResults extends FabricComponent
     @Override
     public boolean equals(FabricComponent obj)
     {
-        Fabric fabric = obj.getFabric();
-        return fabric.equals(super.getFabric()) && obj instanceof ConeResults && this.equals((ConeResults) obj);
+        return obj instanceof ConeResults && this.equals((ConeResults) obj);
     }
     
     /**
@@ -137,9 +143,14 @@ public class ConeResults extends FabricComponent
     public boolean equals(ConeResults obj)
     {
         Table<ThreadType, MeasureLabels, Double> table = obj.getTable();
-        return table.equals(this.table);
+        String fabricName = super.getFabric().getName();
+        return fabricName.equals(obj.getFabric().getName()) && table.equals(this.table);
     }
     
+    /**
+     * 
+     * @return 
+     */
     public ThreadTypes getThreadTypes()
     {
         ArrayList<ThreadType> objs = this.table.getRowHeaders();
@@ -147,6 +158,12 @@ public class ConeResults extends FabricComponent
         return thrds;
     }
     
+    /**
+     * 
+     * @param fabric
+     * @return
+     * @throws FabricInException 
+     */
     private ThreadTypes getThreadTypes(Fabric fabric) throws FabricInException
     {
         if (fabric == null)
@@ -162,6 +179,10 @@ public class ConeResults extends FabricComponent
         return thrds;
     }
     
+    /**
+     * 
+     * @return 
+     */
     public Double[][]  getWeights()
     {
         ArrayList<ArrayList<Double>> cells = this.table.getCellElements();
@@ -171,6 +192,12 @@ public class ConeResults extends FabricComponent
         return weights;
     }
     
+    /**
+     * 
+     * @param fabric
+     * @return
+     * @throws FabricInException 
+     */
     private Double[][] getWeights(Fabric fabric) throws FabricInException
     {
         if (fabric == null)

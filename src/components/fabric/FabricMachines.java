@@ -86,8 +86,7 @@ public class FabricMachines extends FabricComponent
     @Override
     public boolean equals(FabricComponent obj) 
     {
-        Fabric fabric = obj.getFabric();
-        return fabric.equals(super.getFabric()) && obj instanceof FabricTable && this.equals((FabricMachines) obj);
+        return obj instanceof FabricTable && this.equals((FabricMachines) obj);
     }
 
     /**
@@ -98,7 +97,8 @@ public class FabricMachines extends FabricComponent
     public boolean equals(FabricMachines obj) 
     {
         Machines machs = obj.getMachines();
-        return machs.equals(this.machs);
+        String fabricName = super.getFabric().getName();
+        return fabricName.equals(obj.getFabric().getName()) && machs.equals(this.machs);
     }
 
     /**

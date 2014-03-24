@@ -149,4 +149,19 @@ public interface TableInterface <ROW, COL, CELL>
      * @param cell 
      */
     public void setCell(int rowIndex, int columnIndex, CELL cell);
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean equals(Object obj);
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    public boolean equals(TableInterface obj);
 }
