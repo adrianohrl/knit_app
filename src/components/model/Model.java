@@ -33,7 +33,9 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
      * @param resp
      * @param date
      * @param percs
-     * @param table
+     * @param fabrs
+     * @param vars
+     * @param newVars
      * @throws ModelInException 
      */
     public Model(String name, long ref, Collection coll, Responsible resp, Date date, Percentages percs, Fabrics fabrs, Variants vars, Variants[] newVars) throws ModelInException
