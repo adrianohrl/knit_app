@@ -9,18 +9,18 @@ import components.Status;
  */
 public abstract class ModelComponent 
 {
-    private Model model;
+    private Model mod;
     
     /**
      * 
-     * @param model
+     * @param mod
      * @throws ModelInException 
      */
-    public ModelComponent(Model model) throws ModelInException
+    public ModelComponent(Model mod) throws ModelInException
     {
-        if (model == null)
+        if (mod == null)
             throw new ModelInException("Model must not be null!!!");
-        this.model = model;
+        this.mod = mod;
     }
     
     /**
@@ -35,7 +35,7 @@ public abstract class ModelComponent
      */
     public Model getModel()
     {
-        return this.model;
+        return this.mod;
     }
     
     /**
@@ -49,7 +49,7 @@ public abstract class ModelComponent
      */
     public Status getStatus()
     {
-        return this.model.getStatus();
+        return this.mod.getStatus();
     }
     
     /**
@@ -58,7 +58,7 @@ public abstract class ModelComponent
      */
     public boolean isRegistered()
     {
-        return this.model.isRegistered();
+        return this.mod.isRegistered();
     }
     
     /**
@@ -67,7 +67,7 @@ public abstract class ModelComponent
      */
     public boolean isDeleted()
     {
-        return this.model.isDeleted();
+        return this.mod.isDeleted();
     }
     
     /**
