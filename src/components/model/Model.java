@@ -24,6 +24,7 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
     private Date date;
     private Percentages percs;
     private ModelTable table;
+    private ModelParts parts;
     
     /**
      * 
@@ -36,9 +37,16 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
      * @param fabrs
      * @param vars
      * @param newVars
+     * @param parts
+     * @param programs
+     * @param consumptions
+     * @param units
+     * @param obss
      * @throws ModelInException 
      */
-    public Model(String name, long ref, Collection coll, Responsible resp, Date date, Percentages percs, Fabrics fabrs, Variants vars, Variants[] newVars) throws ModelInException
+    public Model(String name, long ref, Collection coll, Responsible resp, Date date, 
+            Percentages percs, Fabrics fabrs, Variants vars, Variants[] newVars, String[] parts, 
+            String[] programs, double[] consumptions, String[] units, String[] obss) throws ModelInException
     {
         super(name);
         if (ref <= 0)
@@ -59,6 +67,7 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
         if (table == null)
             throw new ModelInException(""); 
         this.table = new ModelTable(this, fabrs, vars, newVars);
+        this.parts = new ModelParts(this, fabrs, parts, programs, consumptions, units, obss);
     }
     
     /**
@@ -75,6 +84,7 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
         this.date = this.getDate(id);
         this.percs = this.getPercentages(id);
         this.table = this.getTable(this);
+        this.parts = this.getParts(this);
     }
     
     /**
@@ -123,28 +133,27 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
      * @throws ModelUpException 
      */
     @Override
-    public void add() throws ModelUpException
+    public void register() throws ModelUpException
     {
         if (super.isDeleted())
             super.updateStatus(false);
-        else if (!super.isRegistered())
-        {
-            String temp1 = "", temp2 = "";
-            Sizes sizes = percs.getSizes();
-            double[] values = percs.getValues();
-            for (int i = 0; i < sizes.size(); i++)
-            {
-                temp1 += ", " + sizes.get(i);
-                temp2 += ", " + values[i];
-            }
-            String sql = "INSERT INTO " + this.getClassName() + "s(Name, Ref, CollId, RespId, MachId, Date" + temp1 + ") VALUES (\"" + 
-                    super.getName() + "\", " + this.ref + ", " + this.coll.getID() + ", " + this.resp.getID() + ", " + this.date + temp2 + ")";
-            Database.update(sql);
-            SimpleObject obj = this.getNew(super.getName());
-            super.setID(obj.getID());
-        }
-        else
+        if (super.isRegistered())
             throw new ModelUpException("This object had already been registered!!!");
+        String temp1 = "", temp2 = "";
+        Sizes sizes = percs.getSizes();
+        double[] values = percs.getValues();
+        for (int i = 0; i < sizes.size(); i++)
+        {
+            temp1 += ", " + sizes.get(i);
+            temp2 += ", " + values[i];
+        }
+        String sql = "INSERT INTO " + this.getClassName() + "s(Name, Ref, CollId, RespId, MachId, Date" + temp1 + ") VALUES (\"" + 
+                super.getName() + "\", " + this.ref + ", " + this.coll.getID() + ", " + this.resp.getID() + ", " + this.date + temp2 + ")";
+        Database.update(sql);
+        SimpleObject obj = this.getNew(super.getName());
+        this.table.register();
+        this.parts.register();
+        super.setID(obj.getID());
     }
     
     /**
@@ -424,9 +433,28 @@ public class Model extends SimpleObject implements Referenceable, Collectionable
      * @param id
      * @return 
      */
-    private ModelTable getTable(Model model)
+    private ModelTable getTable(Model mod)
     {
-        return new ModelTable(model);
+        return new ModelTable(mod);
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public ModelParts getParts()
+    {
+        return this.parts;
+    }
+    
+    /**
+     * 
+     * @param mod
+     * @return 
+     */
+    public ModelParts getParts(Model mod)
+    {
+        return new ModelParts(mod);
     }
 }
  

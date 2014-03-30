@@ -139,7 +139,7 @@ public class ModelTable extends ModelComponent implements TableInterface<Fabric,
      * @throws ModelUpException 
      */
     @Override
-    public void add() throws ModelUpException
+    public void register() throws ModelUpException
     {
         if (!super.isRegistered())
             throw new ModelUpException("This model is not registered yet!!!");

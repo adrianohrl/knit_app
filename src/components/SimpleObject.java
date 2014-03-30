@@ -232,18 +232,15 @@ public abstract class SimpleObject
      * 
      * @throws UpException when this SimpleObject is already registered.
      */
-    public void add() throws UpException
+    public void register() throws UpException
     {
         if (this.isDeleted())
             this.updateStatus(false);
-        else if (!this.isRegistered())
-        {
-            String sql = "INSERT INTO " + this.getClassName() + "s(Name) VALUES (\"" + this.name + "\")";
-            Database.update(sql);
-            this.id = this.getID(this.name);
-        }
-        else
+        if (!this.isRegistered())
             throw new UpException("This object had already been registered!!!");
+        String sql = "INSERT INTO " + this.getClassName() + "s(Name) VALUES (\"" + this.name + "\")";
+        Database.update(sql);
+        this.id = this.getID(this.name);
     }
     
     /**
@@ -371,9 +368,7 @@ public abstract class SimpleObject
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof SimpleObject)
-            return this.equals((SimpleObject) obj);
-        return false;
+        return obj instanceof SimpleObject && this.equals((SimpleObject) obj);
     }
     
     /**

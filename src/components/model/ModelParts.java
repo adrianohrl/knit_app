@@ -1,17 +1,59 @@
 package components.model;
 
-import components.fabric.Fabric;
 import components.fabric.Fabrics;
+import java.util.ArrayList;
+import java.util.Iterator;
+import utilities.Database;
+import utilities.list.*;
         
 /**
  *
  * @author Adriano Henrique Rossette Leite
  * @since 03/26/2014 11:10pm
- * @version 1.0.0001
+ * @version 1.0.0002
  */
-public class ModelParts extends ModelComponent
+public class ModelParts extends ModelComponent implements Iterable<ModelPart>, List<ModelPart>
 {
-    private ModelPart[] parts;
+    private ArrayList<ModelPart> parts;
+    private int numOfParts;
+    
+    /**
+     * 
+     * @param mod
+     * @param fabrs
+     * @param names
+     * @param programs
+     * @param consumptions
+     * @param units
+     * @param obss
+     * @throws ModelInException 
+     */
+    public ModelParts(Model mod, Fabrics fabrs, String[] names, String[] programs, 
+            double[] consumptions, String[] units, String[] obss) throws ModelInException
+    {
+        super(mod);
+        this.parts = this.getParts(mod, fabrs, names, programs, consumptions, units, obss);
+        this.numOfParts = this.parts.size();
+    }
+    
+    /**
+     * 
+     * @param mod
+     * @param parts
+     * @throws ModelInException 
+     */
+    public ModelParts(Model mod, ArrayList<ModelPart> parts) throws ModelInException
+    {
+        super(mod);
+        if (parts == null)
+            throw new ModelInException("Model Parts must not be null!!!");
+        if (parts.size() < 1)
+            throw new ModelInException("Model must have at least one Model Part!!!");
+        if (mod.getTable().getRowCount() == parts.size())
+            throw new ModelInException("The number of model parts must be equals to the number of its fabrics!!!");
+        this.parts = parts;
+        this.numOfParts = this.parts.size();
+    }
     
     /**
      * 
@@ -22,19 +64,72 @@ public class ModelParts extends ModelComponent
     {
         super(mod);
         if (parts == null)
-            throw new ModelInException("");
+            throw new ModelInException("Model Parts must not be null!!!");
         if (mod.getTable().getRowCount() == parts.length)
-            throw new ModelInException("");
-        this.parts = parts;
+            throw new ModelInException("The number of model parts must be equals to the number of its fabrics!!!");
+        this.parts = new ArrayList<ModelPart>();
+        for (ModelPart part : parts)
+            this.parts.add(part);
+        this.numOfParts = this.parts.size();
     }
     
-    public ModelParts(Model mod, Fabrics fabrs, String[] names, String[] programs, 
-            double[] consumptions, String[] units, String[] obss) throws ModelInException
+    /**
+     * 
+     * @param mod 
+     */
+    public ModelParts(Model mod)
     {
         super(mod);
+        this.parts = this.getParts(mod);
+        this.numOfParts = this.parts.size();
+    }
+    
+    /**
+     * 
+     * @param mod
+     * @return
+     * @throws ModelInException 
+     */
+    private ArrayList<ModelPart> getParts(Model mod) throws ModelInException
+    {
+        if (mod == null)
+            throw new ModelInException("Model must not be null!!!");
+        if (!mod.isRegistered())
+            throw new ModelInException("Model has not been registered yet!!!");
+        String sql = "SELECT Id FROM " + this.getClassName() + "s WHERE ModId = " + mod.getID() + " ORDER BY Id";
+        long[] ids = Database.getLongArray(sql);
+        int numOfParts = ids.length;
+        ArrayList<ModelPart> parts = new ArrayList<ModelPart>();
+        for (int i = 0; i < numOfParts; i++)
+        {
+            ModelPart part = new ModelPart(mod, ids[i]);
+            parts.add(part);
+        }
+        return parts;
+    }
+    
+    /**
+     * 
+     * @param mod
+     * @param fabrs
+     * @param names
+     * @param programs
+     * @param consumptions
+     * @param units
+     * @param obss
+     * @return
+     * @throws ModelInException 
+     */
+    private ArrayList<ModelPart> getParts(Model mod, Fabrics fabrs, String[] names, String[] programs, 
+            double[] consumptions, String[] units, String[] obss) throws ModelInException
+    {
         if (fabrs == null)
             throw new ModelInException("Fabrics must not be null!!!");
+        if (fabrs.size() < 1)
+            throw new ModelInException("Model must have at least one Model Part!!!");
         int numOfParts = fabrs.size();
+        if (mod.getTable().getRowCount() == numOfParts)
+            throw new ModelInException("The number of model parts must be equals to the number of its fabrics!!!");
         if (names == null)
             throw new ModelInException("Names must not be null!!!");
         if (names.length != numOfParts) 
@@ -55,6 +150,151 @@ public class ModelParts extends ModelComponent
             throw new ModelInException("Observations must not be null!!!");
         if (obss.length != numOfParts)
             throw new ModelInException("Observations must have the same number of Fabrics!!!");
+        ArrayList<ModelPart> parts = new ArrayList<ModelPart>();
+        for (int i = 0; i < numOfParts; i++)
+        {
+            ModelPart part = new ModelPart(mod, fabrs.get(i), names[i], programs[i], consumptions[i], units[i], obss[i]);
+            parts.add(part);
+        }
+        return parts;
     }
-            
+    
+    /**
+     * 
+     */
+    @Override
+    public void register() throws ModelUpException
+    {
+        if (super.isRegistered())
+            throw new ModelUpException("These model parts have already been registered!!!");
+        for ()
+    }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean equals(ModelComponent obj)
+    {
+        return obj instanceof ModelParts && this.equals((ModelParts) obj);
+    }
+    
+    /**
+     * 
+     * @param obj
+     * @return 
+     */
+    public boolean equals(ModelParts obj)
+    {
+        return 
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public String toString()
+    {
+        return 
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public String getClassName()
+    {
+        return "ModelParts";
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public Iterator<ModelPart> iterator()
+    {
+        return new ModelPartsIterator(this);
+    }
+    
+    /**
+     * 
+     */
+    @Override
+    public void clear()
+    {
+        this.parts.clear();
+    }
+    
+    /**
+     *
+     * @return
+     */
+    @Override
+    public int size()
+    {
+        return this.parts.size();
+    }
+    
+    /**
+     *
+     * @return
+     */
+    @Override
+    public boolean isEmpty()
+    {
+        return this.parts.isEmpty();
+    }
+    
+    /**
+     * 
+     * @param index
+     * @return
+     */
+    @Override
+    public ModelPart get(int index) throws ListException
+    {
+        if (index < 0 || index >= this.size())
+            throw new ListException("Invalid index!!!");
+        return this.parts.get(index);
+    }
+    
+    /**
+     * 
+     * @param part
+     * @return
+     * @throws ListException 
+     */
+    @Override
+    public boolean contains(ModelPart part) throws ListException
+    {
+        if (part == null)
+            throw new ListException("Part must not be null!!!");
+        return 
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public ModelPart[] toArray();
+    {
+        
+    }
+    
+    /**
+     * 
+     * @param index
+     * @return 
+     */
+    @Override
+    public ModelPart remove(int index) throws ListException
+    {
+        
+    }
 }

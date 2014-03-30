@@ -41,7 +41,7 @@ public abstract class ModelComponent
     /**
      * 
      */
-    public abstract void add();
+    public abstract void register();
     
     /**
      * 

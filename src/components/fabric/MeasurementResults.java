@@ -99,10 +99,10 @@ public class MeasurementResults extends FabricComponent
      * 
      */
     @Override
-    public void add() throws FabricUpException
+    public void register() throws FabricUpException
     {
-        this.cRes.add();
-        this.fRes.add();
+        this.cRes.register();
+        this.fRes.register();
     }
     
     /**

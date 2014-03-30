@@ -7,7 +7,7 @@ import utilities.Database;
  *
  * @author Adriano Henrique Rossette Leite
  * @since 03/25/2014 10:12pm
- * @version 1.0.0000
+ * @version 1.0.0002
  */
 public class ModelPart extends ModelComponent
 {
@@ -29,16 +29,31 @@ public class ModelPart extends ModelComponent
      * @param unit
      * @param obs 
      */
-    public ModelPart(Model mod, Fabric fabr, String name, String program, double consumption, String unit, String obs)
+    public ModelPart(Model mod, Fabric fabr, String name, String program, double consumption, String unit, String obs) throws ModelInException
     {
         super(mod);
+        if (mod.isRegistered())
+            throw new ModelInException("This model has already been registered. Please, in this case, use other constructor!!!");
         this.id = 0;
+        if (fabr == null)
+            throw new ModelInException("Fabric must not be null!!!");
         this.fabr = fabr;
+        if (name == null || name.equals(""))
+            throw new ModelInException("Invalid part name!!!");
         this.name = name;
+        if (program == null || program.equals(""))
+            throw new ModelInException("Invalid program name!!!");
         this.program = program;
+        if (consumption <= 0)
+            throw new ModelInException("Consumption must be a positive real number!!!");
         this.consumption = consumption;
+        if (unit == null || unit.equals(""))
+            throw new ModelInException("Invalid consumption unit!!!");
         this.unit = unit;
-        this.obs = obs;
+        if (obs == null)
+            this.obs = "";
+        else
+            this.obs = obs;
     }
     
     /**
@@ -307,9 +322,9 @@ public class ModelPart extends ModelComponent
      * 
      */
     @Override
-    public void add()
+    public void register()
     {
-        if (super.isDeleted() || super.isRegistered())
+        if (super.isRegistered())
             throw new ModelUpException("This object had already been registered!!!");
         String sql = "INSERT INTO " + this.getClassName() + "s(Name, ModId, FabrId, Program, " +
                 "Consumption, Unit, Obs) VALUES (\"" + this.getName() + "\", " + 

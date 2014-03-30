@@ -122,7 +122,7 @@ public class FabricResults extends FabricComponent
      * 
      */
     @Override
-    public void add() throws FabricUpException
+    public void register() throws FabricUpException
     {
         if (!super.isRegistered())
             throw new FabricUpException("This fabric is not registered yet!!!");

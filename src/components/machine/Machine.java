@@ -81,19 +81,16 @@ public class Machine extends SimpleObject implements Costable
      * @throws MachineUpException 
      */
     @Override
-    public void add() throws MachineUpException
+    public void register() throws MachineUpException
     {
         if (super.isDeleted())
             super.updateStatus(false);
-        else if (!super.isRegistered())
-        {
-            String sql = "INSERT INTO " + this.getClassName() + "s(Name, Cost) VALUES (\"" + super.getName() + "\", " + this.cost + ")";
-            Database.update(sql);
-            SimpleObject obj = this.getNew(super.getName());
-            super.setID(obj.getID());
-        }
-        else
+        if (super.isRegistered())
             throw new MachineUpException("This object had already been registered!!!");
+        String sql = "INSERT INTO " + this.getClassName() + "s(Name, Cost) VALUES (\"" + super.getName() + "\", " + this.cost + ")";
+        Database.update(sql);
+        SimpleObject obj = this.getNew(super.getName());
+        super.setID(obj.getID());
     }
     
     /**
@@ -120,12 +117,22 @@ public class Machine extends SimpleObject implements Costable
         return id == super.getID() && name.equalsIgnoreCase(super.getName()) && cost == this.cost;
     }
     
+    /**
+     * 
+     * @return 
+     */
     @Override
     public double getCost()
     {
         return this.cost;
     }
     
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws MachineInException 
+     */
     private double getCost(long id) throws MachineInException
     {
         double cost = 0.0;
@@ -139,6 +146,11 @@ public class Machine extends SimpleObject implements Costable
         return cost;
     }
     
+    /**
+     * 
+     * @param newCost
+     * @throws MachineInException 
+     */
     @Override
     public void updateCost(double newCost) throws MachineInException
     {

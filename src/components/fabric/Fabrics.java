@@ -11,12 +11,19 @@ import java.util.ArrayList;
  */
 public class Fabrics extends SimpleObjects<Fabric>
 {
+    /**
+     * 
+     */
     public Fabrics()
     {
         super();
         
     }
     
+    /**
+     * 
+     * @param objects 
+     */
     public Fabrics(ArrayList<Fabric> objects)
     {
         super(objects);

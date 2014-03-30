@@ -10,7 +10,8 @@ import utilities.Database;
  * 
  * 
  * @author Adriano Henrique Rossette Leite
- * @version 12/21/2013 09:30 pm
+ * @since 12/21/2013 09:30 pm
+ * @version 1.0.0001
  */
 public class ThreadType extends SimpleObject implements Observable, Costable, DensityMeasurable
 {
@@ -94,19 +95,16 @@ public class ThreadType extends SimpleObject implements Observable, Costable, De
      * @throws ThreadTypeUpException 
      */
     @Override
-    public void add() throws ThreadTypeUpException
+    public void register() throws ThreadTypeUpException
     {
         if (super.isDeleted())
             super.updateStatus(false);
-        else if (!super.isRegistered())
-        {
-            String sql = "INSERT INTO " + this.getClassName() + "s(Name, Cost, Obs, Density) VALUES (\"" + super.getName() + "\", " + this.cost + ", \"" + this.obs + "\", " + this.density + ")";
-            Database.update(sql);
-            SimpleObject obj = this.getNew(super.getName());
-            super.setID(obj.getID());
-        }
-        else
+        else if (super.isRegistered())
             throw new ThreadTypeUpException("This object had already been registered!!!");
+        String sql = "INSERT INTO " + this.getClassName() + "s(Name, Cost, Obs, Density) VALUES (\"" + super.getName() + "\", " + this.cost + ", \"" + this.obs + "\", " + this.density + ")";
+        Database.update(sql);
+        SimpleObject obj = this.getNew(super.getName());
+        super.setID(obj.getID());
     }
     
     /**

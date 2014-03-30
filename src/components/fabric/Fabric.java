@@ -138,24 +138,21 @@ public class Fabric extends SimpleObject implements Observable, Collectionable, 
      * @throws FabricUpException 
      */
     @Override
-    public void add() throws FabricUpException
+    public void register() throws FabricUpException
     {
         if (super.isDeleted())
             super.updateStatus(false);
-        else if (!super.isRegistered())
-        {
-            String sql = "INSERT INTO " + this.getClassName() + "s(Name, Obs, CollId, RespId, MachId, Date) VALUES (\"" + 
-                    super.getName() + "\", \"" + this.obs + "\", " + this.coll.getID() + ", " + this.resp.getID() + ", " +
-                    this.mach.getID() + ", " + DateTime.formatDateTime(this.date) + ")";
-            Database.update(sql);
-            super.setID(super.getID(super.getName()));
-            super.setStatus(Status.IS_REGISTERED);
-            this.table.add();
-            this.machs.add();
-            this.results.add();
-        }
-        else
+        if (super.isRegistered())
             throw new FabricUpException("This object had already been registered!!!");
+        String sql = "INSERT INTO " + this.getClassName() + "s(Name, Obs, CollId, RespId, MachId, Date) VALUES (\"" + 
+                super.getName() + "\", \"" + this.obs + "\", " + this.coll.getID() + ", " + this.resp.getID() + ", " +
+                this.mach.getID() + ", " + DateTime.formatDateTime(this.date) + ")";
+        Database.update(sql);
+        super.setID(super.getID(super.getName()));
+        super.setStatus(Status.IS_REGISTERED);
+        this.table.register();
+        this.machs.register();
+        this.results.register();            
     }
     
     /**
@@ -218,13 +215,10 @@ public class Fabric extends SimpleObject implements Observable, Collectionable, 
     private String getObs(long id) throws FabricInException
     {
         String obs = "";
-        if (id > 0)
-        {
-            String sql = "SELECT Obs FROM " + this.getClassName() + "s WHERE Id = " + id;
-            obs = Database.getStringElement(sql);
-        }
-        else if (id < 0)
+        if (id <= 0)
             throw new FabricInException("Invalid ID!!!");
+        String sql = "SELECT Obs FROM " + this.getClassName() + "s WHERE Id = " + id;
+        obs = Database.getStringElement(sql);
         return obs;
     }
     

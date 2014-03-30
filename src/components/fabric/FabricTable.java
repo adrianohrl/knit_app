@@ -141,7 +141,7 @@ public class FabricTable extends FabricComponent implements TableInterface<Threa
      * @throws FabricUpException 
      */
     @Override
-    public void add() throws FabricUpException
+    public void register() throws FabricUpException
     {
         if (!super.isRegistered())
             throw new FabricUpException("This fabric is not registered yet!!!");
