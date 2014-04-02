@@ -6,6 +6,7 @@ import java.util.Iterator;
  *
  * @author Adriano Henrique Rossette Leite
  * @version 03/03/2014 08:22pm
+ * @version 1.0.0001
  */
 public class SizesTest 
 {
@@ -31,7 +32,7 @@ public class SizesTest
         System.out.println("\r\n***************Registration***************");
         for (int i = 0; i < sizes.length; i++)
             if (!sizes[i].isRegistered())
-                sizes[i].add();
+                sizes[i].register();
             else
                 System.out.println("This size " + sizes[i].getName() + " has already been registered!!!");
         

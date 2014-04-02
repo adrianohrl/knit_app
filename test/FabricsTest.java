@@ -13,7 +13,8 @@ import java.util.Date;
 /**
  *
  * @author Adriano Henrique Rossette Leite
- * @version 03/14/2014 3:06 pm
+ * @since 03/14/2014 3:06pm
+ * @version 1.0.0001
  */
 public class FabricsTest 
 {
@@ -58,7 +59,7 @@ public class FabricsTest
         
         /*******************************************************************/
         if (!f0.isRegistered())
-            f0.add();
+            f0.register();
         else
             System.out.println("This fabric has already been registered!!!");
         

@@ -5,7 +5,8 @@ import java.util.Iterator;
 /**
  *
  * @author Adriano Henrique Rossette Leite
- * @version 03/03/2014 07:41pm
+ * @since 03/03/2014 07:41pm
+ * @version 1.0.0001
  */
 public class ColorsTest 
 {
@@ -29,7 +30,7 @@ public class ColorsTest
         System.out.println("\r\n***************Registration***************");
         for (int i = 0; i < colors.length; i++)
             if (!colors[i].isRegistered())
-                colors[i].add();
+                colors[i].register();
             else
                 System.out.println("This color " + colors[i].getName() + " has already been registered!!!");
         

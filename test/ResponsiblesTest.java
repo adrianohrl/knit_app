@@ -6,6 +6,7 @@ import java.util.Iterator;
  *
  * @author Adriano Henrique Rossette Leite
  * @version 03/03/2014 08:20pm
+ * @version 1.0.0001
  */
 public class ResponsiblesTest 
 {
@@ -27,7 +28,7 @@ public class ResponsiblesTest
         System.out.println("\r\n***************Registration***************");
         for (int i = 0; i < resps.length; i++)
             if (!resps[i].isRegistered())
-                resps[i].add();
+                resps[i].register();
             else
                 System.out.println("This responsible " + resps[i].getName() + " has already been registered!!!");
         

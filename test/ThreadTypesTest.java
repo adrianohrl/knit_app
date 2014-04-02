@@ -6,6 +6,7 @@ import java.util.Iterator;
  *
  * @author Adriano Henrique Rossette Leite
  * @version 03/03/2014 08:23pm
+ * @version 1.0.0001
  */
 public class ThreadTypesTest 
 {
@@ -28,7 +29,7 @@ public class ThreadTypesTest
         System.out.println("\r\n***************Registration***************");
         for (int i = 0; i < thrds.length; i++)
             if (!thrds[i].isRegistered())
-                thrds[i].add();
+                thrds[i].register();
             else
                 System.out.println("This thrdection " + thrds[i].getName() + " has already been registered!!!");
         

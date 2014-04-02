@@ -5,7 +5,8 @@ import java.util.Iterator;
 /**
  *
  * @author Adriano Henrique Rossette Leite
- * @version 03/03/2014 08:20pm
+ * @since 03/03/2014 08:20pm
+ * @version 1.0.0001
  */
 public class MachinesTest 
 {
@@ -35,7 +36,7 @@ public class MachinesTest
         System.out.println("\r\n***************Registration***************");
         for (int i = 0; i < machs.length; i++)
             if (!machs[i].isRegistered())
-                machs[i].add();
+                machs[i].register();
             else
                 System.out.println("This machine " + machs[i].getName() + " has already been registered!!!");
         

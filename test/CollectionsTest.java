@@ -5,6 +5,8 @@ import java.util.Iterator;
 /**
  *
  * @author Adriano Henrique Rossette Leite
+ * @since 03/03/2014 07:41pm
+ * @version 1.0.0001
  */
 public class CollectionsTest 
 {
@@ -37,7 +39,7 @@ public class CollectionsTest
         System.out.println("\r\n***************Registration***************");
         for (int i = 0; i < colls.length; i++)
             if (!colls[i].isRegistered())
-                colls[i].add();
+                colls[i].register();
             else
                 System.out.println("This collection " + colls[i].getName() + " has already been registered!!!");
         

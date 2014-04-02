@@ -10,12 +10,11 @@ import utilities.list.*;
  *
  * @author Adriano Henrique Rossette Leite
  * @since 03/26/2014 11:10pm
- * @version 1.0.0002
+ * @version 1.0.0003
  */
 public class ModelParts extends ModelComponent implements Iterable<ModelPart>, List<ModelPart>
 {
     private ArrayList<ModelPart> parts;
-    private int numOfParts;
     
     /**
      * 
@@ -33,7 +32,6 @@ public class ModelParts extends ModelComponent implements Iterable<ModelPart>, L
     {
         super(mod);
         this.parts = this.getParts(mod, fabrs, names, programs, consumptions, units, obss);
-        this.numOfParts = this.parts.size();
     }
     
     /**
@@ -52,7 +50,6 @@ public class ModelParts extends ModelComponent implements Iterable<ModelPart>, L
         if (mod.getTable().getRowCount() == parts.size())
             throw new ModelInException("The number of model parts must be equals to the number of its fabrics!!!");
         this.parts = parts;
-        this.numOfParts = this.parts.size();
     }
     
     /**
@@ -70,7 +67,6 @@ public class ModelParts extends ModelComponent implements Iterable<ModelPart>, L
         this.parts = new ArrayList<ModelPart>();
         for (ModelPart part : parts)
             this.parts.add(part);
-        this.numOfParts = this.parts.size();
     }
     
     /**
@@ -81,7 +77,6 @@ public class ModelParts extends ModelComponent implements Iterable<ModelPart>, L
     {
         super(mod);
         this.parts = this.getParts(mod);
-        this.numOfParts = this.parts.size();
     }
     
     /**
@@ -161,13 +156,23 @@ public class ModelParts extends ModelComponent implements Iterable<ModelPart>, L
     
     /**
      * 
+     * @return 
+     */
+    public ArrayList<ModelPart> getParts()
+    {
+        return this.parts;
+    }
+    
+    /**
+     * 
      */
     @Override
     public void register() throws ModelUpException
     {
         if (super.isRegistered())
             throw new ModelUpException("These model parts have already been registered!!!");
-        for ()
+        for (ModelPart part : this)
+            part.register();
     }
     
     /**
@@ -188,7 +193,7 @@ public class ModelParts extends ModelComponent implements Iterable<ModelPart>, L
      */
     public boolean equals(ModelParts obj)
     {
-        return 
+        return this.parts.equals(obj.getParts());
     }
     
     /**
@@ -198,7 +203,11 @@ public class ModelParts extends ModelComponent implements Iterable<ModelPart>, L
     @Override
     public String toString()
     {
-        return 
+        String str = "";
+        Iterator it = this.iterator();
+        for (ModelPart part : this)
+            str += part + "\r\n";
+        return str;
     }
     
     /**
@@ -274,7 +283,7 @@ public class ModelParts extends ModelComponent implements Iterable<ModelPart>, L
     {
         if (part == null)
             throw new ListException("Part must not be null!!!");
-        return 
+        return this.parts.contains(part);
     }
     
     /**
@@ -282,9 +291,12 @@ public class ModelParts extends ModelComponent implements Iterable<ModelPart>, L
      * @return 
      */
     @Override
-    public ModelPart[] toArray();
+    public ModelPart[] toArray()
     {
-        
+        ModelPart[] array = new ModelPart[this.size()];
+        for (int i = 0; i < array.length; i++)
+            array[i] = this.get(i);
+        return array;
     }
     
     /**
@@ -295,6 +307,8 @@ public class ModelParts extends ModelComponent implements Iterable<ModelPart>, L
     @Override
     public ModelPart remove(int index) throws ListException
     {
-        
+        if (index < 0 || index >= this.size())
+            throw new ListException("Invalid index!!!");
+        return this.parts.remove(index);
     }
 }

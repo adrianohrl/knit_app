@@ -2,11 +2,11 @@ import components.variant.*;
 import components.SimpleObject;
 import java.util.Iterator;
 
-
 /**
  *
  * @author Adriano Henrique Rossette Leite
- * @version 03/03/2014 08:23pm
+ * @since 03/03/2014 08:23pm
+ * @version 1.0.0001
  */
 public class VariantsTest 
 {
@@ -33,7 +33,7 @@ public class VariantsTest
         System.out.println("\r\n***************Registration***************");
         for (int i = 0; i < varts.length; i++)
             if (!varts[i].isRegistered())
-                varts[i].add();
+                varts[i].register();
             else
                 System.out.println("This variant " + varts[i].getName() + " has already been registered!!!");
         
